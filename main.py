@@ -1,6 +1,7 @@
 import pygame as pg
 import pygame_menu
 import maze_generator
+import levels
 import os
 
 
@@ -53,6 +54,8 @@ pg.display.set_caption("Labyrinth")
 
 def start_the_game(level):
     maze = level
+
+    walls.clear()
 
     x = y = 0
     for row in maze:
@@ -110,6 +113,7 @@ def win_screen():
 def menu_screen():
     menu = pygame_menu.Menu('Лабиринт', 480, 485, theme=pygame_menu.themes.THEME_BLUE)
 
+    menu.add.button('1 уровень', start_the_game, levels.level1)
     menu.add.button('Играть рандомный уровень', start_the_game, maze_generator.maze_generator(size_of_maze))
     menu.add.button('Выйти', pygame_menu.events.EXIT)
 

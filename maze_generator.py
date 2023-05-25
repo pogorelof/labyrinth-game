@@ -71,9 +71,9 @@ def maze_generator(size):
     return maze
 
 
-# size = 15
-
+# size = 22
+#
 # maze = maze_generator(size)
-
+#
 # for i, line in enumerate(maze):
 #     print(f'{i} - {line}')
