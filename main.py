@@ -1,4 +1,5 @@
 import pygame as pg
+import pygame_menu
 import maze_generator
 import os
 
@@ -45,51 +46,73 @@ pg.init()
 
 clock = pg.time.Clock()
 
-screen = pg.display.set_mode((480,485))
+width = 480
+length = 486
+screen = pg.display.set_mode((width,length))
 pg.display.set_caption("Labyrinth")
 
-maze = maze_generator.maze_generator(size_of_maze)
+def start_the_game(level):
+    maze = level
 
-x = y = 0
-for row in maze:
-    for col in row:
-        if col == '#':
-            Wall((x,y))
-        if col == '*':
-            end_rect = pg.Rect(x, y, size_of_maze, size_of_maze)
-        if col == 'P':
-            player.rect = pg.Rect(x, y, size_of_maze,size_of_maze)
-        x += size_of_maze
-    y += size_of_maze
-    x = 0
+    x = y = 0
+    for row in maze:
+        for col in row:
+            if col == '#':
+                Wall((x, y))
+            if col == '*':
+                end_rect = pg.Rect(x, y, size_of_maze, size_of_maze)
+            if col == 'P':
+                player.rect = pg.Rect(x, y, size_of_maze, size_of_maze)
+            x += size_of_maze
+        y += size_of_maze
+        x = 0
 
-run = True
-while run:
+    run = True
+    while run:
 
-    clock.tick(60)
+        clock.tick(60)
 
-    for i in pg.event.get():
-        if i.type == pg.QUIT:
-            run = False
+        for i in pg.event.get():
+            if i.type == pg.QUIT:
+                run = False
 
-    key = pg.key.get_pressed()
-    if key[pg.K_LEFT]:
-        player.move(-2,0)
-    if key[pg.K_RIGHT]:
-        player.move(2, 0)
-    if key[pg.K_UP]:
-        player.move(0, -2)
-    if key[pg.K_DOWN]:
-        player.move(0, 2)
+        key = pg.key.get_pressed()
+        if key[pg.K_LEFT]:
+            player.move(-2, 0)
+        if key[pg.K_RIGHT]:
+            player.move(2, 0)
+        if key[pg.K_UP]:
+            player.move(0, -2)
+        if key[pg.K_DOWN]:
+            player.move(0, 2)
+        #при достижении выхода
+        if player.rect.colliderect(end_rect):
+            win_screen()
 
-    if player.rect.colliderect(end_rect):
-        pg.quit()
+        # отрисовка лабиринта
+        screen.fill((0, 0, 0))
+        for wall in walls:
+            pg.draw.rect(screen, (255, 255, 255), wall.rect)
+        pg.draw.rect(screen, (255, 200, 0), player.rect)
+        pg.draw.rect(screen, (255, 0, 0), end_rect)
+        pg.display.flip()
+        clock.tick(360)
 
-    #отрисовка лабиринта
-    screen.fill((0,0,0))
-    for wall in walls:
-        pg.draw.rect(screen, (255,255,255), wall.rect)
-    pg.draw.rect(screen,(255, 200, 0), player.rect)
-    pg.draw.rect(screen, (255, 0,0), end_rect)
-    pg.display.flip()
-    clock.tick(360)
+def win_screen():
+    menu = pygame_menu.Menu('Победа!', 480, 485, theme=pygame_menu.themes.THEME_BLUE)
+
+    menu.add.button('Играть рандомный уровень', start_the_game, maze_generator.maze_generator(size_of_maze))
+    menu.add.button('Выйти в меню', menu_screen)
+
+    menu.mainloop(screen)
+
+
+def menu_screen():
+    menu = pygame_menu.Menu('Лабиринт', 480, 485, theme=pygame_menu.themes.THEME_BLUE)
+
+    menu.add.button('Играть рандомный уровень', start_the_game, maze_generator.maze_generator(size_of_maze))
+    menu.add.button('Выйти', pygame_menu.events.EXIT)
+
+    menu.mainloop(screen)
+
+menu_screen()
